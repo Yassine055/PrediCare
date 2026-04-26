@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.database import check_connection, create_tables
 from api.routes.auth import router as auth_router
 from api.routes.patients import router as patients_router
+from api.routes.pdf import router as pdf_router
 from api.routes.predict import load_ml_models, router as predict_router
 
 load_dotenv()
@@ -81,6 +82,7 @@ app.add_middleware(
 app.include_router(auth_router)       # /auth/register, /auth/login
 app.include_router(predict_router)    # /predict/
 app.include_router(patients_router)   # /patients/
+app.include_router(pdf_router)        # /patients/{id}/pdf
 
 
 # ── Routes de base ────────────────────────────────────────────────────────────
