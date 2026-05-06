@@ -7,15 +7,15 @@ par les outils statiques (Pylance, mypy).
 """
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import Optional
 
-from sqlalchemy import ForeignKey, String, func
+from sqlalchemy import ForeignKey, JSON, String, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 # ── Base déclarative SQLAlchemy 2.0 ──────────────────────────────────────────
 class Base(DeclarativeBase):
-    pass
+    type_annotation_map = {dict: JSON}
 
 
 # ── Table : Medecin ───────────────────────────────────────────────────────────
@@ -91,7 +91,7 @@ class Score(Base):
     probabilite: Mapped[float] = mapped_column()           # 0.0 – 1.0
 
     # Valeurs SHAP sérialisées en JSON — Optional car calcul asynchrone possible
-    shap_values: Mapped[Optional[Any]] = mapped_column(default=None)
+    shap_values: Mapped[Optional[dict]] = mapped_column(default=None)
 
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 

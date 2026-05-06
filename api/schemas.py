@@ -34,6 +34,19 @@ class MedecinOut(BaseModel):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+class MedecinUpdate(BaseModel):
+    """Donnees modifiables du profil medecin."""
+    nom    : str = Field(..., min_length=2, max_length=100)
+    prenom : str = Field(..., min_length=2, max_length=100)
+    email  : EmailStr
+
+
+class PasswordChange(BaseModel):
+    """Donnees requises pour changer le mot de passe."""
+    current_password: str = Field(..., min_length=1)
+    new_password    : str = Field(..., min_length=8)
+
+
 # PATIENT
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -54,6 +67,10 @@ class PatientCreate(BaseModel):
     creatinine           : float = Field(..., ge=30.0, le=2000.0)
     tabac                : int   = Field(..., ge=0,    le=1)
     antecedents_familiaux: int   = Field(..., ge=0,    le=1)
+
+
+class PatientUpdate(PatientCreate):
+    """Donnees modifiables d'un dossier patient."""
 
 
 class PatientOut(BaseModel):
@@ -158,6 +175,39 @@ class PredictionResponse(BaseModel):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# SCORE ML
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class ScoreCreate(BaseModel):
+    """Données requises pour enregistrer un score de prédiction ML."""
+    patient_id  : int
+    score       : float = Field(..., ge=0.0, le=100.0)
+    niveau      : str   = Field(..., description="faible | modere | eleve")
+    probabilite : float = Field(..., ge=0.0, le=1.0)
+    shap_values : Optional[dict] = None
+
+
+class ScoreOut(BaseModel):
+    """Représentation publique d'un score de prédiction."""
+    model_config = ConfigDict(from_attributes=True)
+
+    id          : int
+    patient_id  : int
+    score       : float
+    niveau      : str
+    probabilite : float
+    shap_values : Optional[dict]
+    created_at  : datetime
+
+
+class PatientWithScore(PatientOut):
+    """Patient enrichi avec les données du dernier score de prédiction."""
+    last_score      : Optional[float]    = None
+    last_niveau     : Optional[str]      = None
+    last_score_date : Optional[datetime] = None
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # AUTHENTIFICATION JWT
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -170,3 +220,18 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     """Payload extrait du token JWT lors de la vérification."""
     email: Optional[str] = None
+
+
+class MedecinInfo(BaseModel):
+    """Informations publiques du médecin connecté."""
+    id    : int
+    nom   : str
+    prenom: str
+    email : str
+
+
+class TokenWithMedecin(BaseModel):
+    """Token JWT + informations du médecin connecté."""
+    access_token: str
+    token_type  : str = "bearer"
+    medecin     : MedecinInfo

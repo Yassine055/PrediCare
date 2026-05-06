@@ -14,6 +14,7 @@ from api.routes.auth import router as auth_router
 from api.routes.patients import router as patients_router
 from api.routes.pdf import router as pdf_router
 from api.routes.predict import load_ml_models, router as predict_router
+from api.routes.scores import router as scores_router
 
 load_dotenv()
 
@@ -68,13 +69,10 @@ app = FastAPI(
 # ── Middleware CORS — autoriser le frontend ───────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",   # React (Create React App)
-        "http://localhost:5173",   # Vite + React
-    ],
-    allow_credentials = True,
-    allow_methods     = ["*"],
-    allow_headers     = ["*"],
+    allow_origin_regex = r"http://(localhost|127\.0\.0\.1)(:\d+)?",
+    allow_credentials  = True,
+    allow_methods      = ["*"],
+    allow_headers      = ["*"],
 )
 
 
@@ -83,6 +81,7 @@ app.include_router(auth_router)       # /auth/register, /auth/login
 app.include_router(predict_router)    # /predict/
 app.include_router(patients_router)   # /patients/
 app.include_router(pdf_router)        # /patients/{id}/pdf
+app.include_router(scores_router)     # /scores/
 
 
 # ── Routes de base ────────────────────────────────────────────────────────────
