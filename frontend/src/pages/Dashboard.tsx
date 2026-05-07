@@ -59,6 +59,10 @@ const formatShortDate = (value?: string) => {
   });
 };
 
+/* Première lettre de chaque mot en majuscule */
+const cap = (s: string) =>
+  s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '';
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -211,38 +215,41 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-bg">
       <Sidebar />
-      <main className="ml-[220px] p-8">
-        <div className="flex items-center justify-between mb-8">
+      {/* pt-16 sur mobile pour laisser la place au bouton hamburger */}
+      <main className="ml-0 lg:ml-[220px] p-4 sm:p-6 lg:p-8 pt-16 lg:pt-8">
+        <div className="flex items-center justify-between mb-6 lg:mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Bonjour Dr. {prenom} {nom}
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+              Bonjour Dr. {cap(prenom)} {cap(nom)}
             </h1>
             <p className="text-gray-500 text-sm mt-1 capitalize">{today}</p>
           </div>
           <button
             id="new-patient-btn"
             onClick={() => navigate('/analyze')}
-            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary-medium transition-colors duration-200"
+            className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary-medium transition-colors duration-200 text-sm"
           >
             <Plus className="w-4 h-4" />
-            Nouveau patient
+            <span className="hidden sm:inline">Nouveau patient</span>
+            <span className="sm:hidden">Nouveau</span>
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        {/* Stat cards — 2 colonnes sur mobile, 4 sur desktop */}
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
           {[
             { label: 'Total patients', value: stats.total, icon: Users, color: riskColors.neutral, bg: '#E6F1FB' },
-            { label: 'Analyses enregistrées', value: stats.analyses, icon: FileText, color: riskColors.neutral, bg: '#E6F1FB' },
+            { label: 'Analyses', value: stats.analyses, icon: FileText, color: riskColors.neutral, bg: '#E6F1FB' },
             { label: 'Score moyen', value: stats.scoreMoyen ? stats.scoreMoyen.toFixed(1) : '—', icon: TrendingUp, color: '#633806', bg: '#FAEEDA' },
             { label: 'À surveiller', value: watchPatients.length, icon: AlertTriangle, color: riskColors.eleve, bg: '#FCEBEB' },
           ].map((stat) => (
-            <div key={stat.label} className="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: stat.bg }}>
-                <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
+            <div key={stat.label} className="bg-white rounded-xl shadow-sm p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: stat.bg }}>
+                <stat.icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: stat.color }} />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-sm text-gray-500">{stat.label}</p>
+              <div className="min-w-0">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-xs sm:text-sm text-gray-500 truncate">{stat.label}</p>
               </div>
             </div>
           ))}
@@ -282,24 +289,8 @@ const Dashboard = () => {
                       fontSize: '13px',
                     }}
                   />
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="analyses"
-                    name="Analyses"
-                    stroke="#0C447C"
-                    strokeWidth={3}
-                    dot={{ r: 4 }}
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="scoreMoyen"
-                    name="Score moyen"
-                    stroke="#791F1F"
-                    strokeWidth={3}
-                    dot={{ r: 4 }}
-                  />
+                  <Line yAxisId="left" type="monotone" dataKey="analyses" name="Analyses" stroke="#0C447C" strokeWidth={3} dot={{ r: 4 }} />
+                  <Line yAxisId="right" type="monotone" dataKey="scoreMoyen" name="Score moyen" stroke="#791F1F" strokeWidth={3} dot={{ r: 4 }} />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -368,7 +359,7 @@ const Dashboard = () => {
                     className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
                   >
                     <div>
-                      <p className="font-semibold text-gray-900 text-sm">
+                      <p className="font-semibold text-gray-900 text-sm capitalize">
                         {patient.prenom} {patient.nom}
                       </p>
                       <p className="text-xs text-gray-400">
@@ -411,10 +402,11 @@ const Dashboard = () => {
                   <thead>
                     <tr className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                       <th className="px-6 py-3">Patient</th>
-                      <th className="px-6 py-3">Âge</th>
+                      {/* Colonnes secondaires masquées sur petit écran */}
+                      <th className="px-6 py-3 hidden sm:table-cell">Âge</th>
                       <th className="px-6 py-3">Score</th>
                       <th className="px-6 py-3">Niveau</th>
-                      <th className="px-6 py-3">Date</th>
+                      <th className="px-6 py-3 hidden md:table-cell">Date</th>
                       <th className="px-6 py-3 text-right">Actions</th>
                     </tr>
                   </thead>
@@ -423,24 +415,24 @@ const Dashboard = () => {
                       <tr key={patient.id} className="hover:bg-gray-50/50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-primary-light flex items-center justify-center">
-                              <span className="text-primary text-sm font-semibold">
+                            <div className="w-9 h-9 rounded-full bg-primary-light flex items-center justify-center shrink-0">
+                              <span className="text-primary text-sm font-semibold uppercase">
                                 {patient.prenom?.[0]}{patient.nom?.[0]}
                               </span>
                             </div>
-                            <p className="font-medium text-gray-900 text-sm">
+                            <p className="font-medium text-gray-900 text-sm capitalize">
                               {patient.prenom} {patient.nom}
                             </p>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">{patient.age} ans</td>
+                        <td className="px-6 py-4 text-sm text-gray-600 hidden sm:table-cell">{patient.age} ans</td>
                         <td className="px-6 py-4">
                           <span className="font-semibold text-sm text-gray-900">
                             {patient.last_score?.toFixed(1) ?? '—'}
                           </span>
                         </td>
                         <td className="px-6 py-4">{getNiveauBadge(patient.last_niveau)}</td>
-                        <td className="px-6 py-4 text-sm text-gray-500">
+                        <td className="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">
                           {formatShortDate(patient.last_score_date)}
                         </td>
                         <td className="px-6 py-4">
@@ -473,7 +465,7 @@ const Dashboard = () => {
         {recentScores.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Dernières analyses</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
               {recentScores.map((patient) => (
                 <button
                   key={patient.id}
@@ -481,7 +473,7 @@ const Dashboard = () => {
                   className="rounded-xl border border-gray-100 p-4 text-left hover:border-primary/30 hover:bg-primary-light/40 transition-colors"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <p className="font-semibold text-gray-900 text-sm truncate">
+                    <p className="font-semibold text-gray-900 text-sm truncate capitalize">
                       {patient.prenom} {patient.nom}
                     </p>
                     {getNiveauBadge(patient.last_niveau)}

@@ -125,9 +125,9 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-bg">
       <Sidebar />
-      <main className="ml-[220px] p-8">
+      <main className="ml-0 lg:ml-[220px] p-4 sm:p-6 lg:p-8 pt-16 lg:pt-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Profil médecin</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Profil médecin</h1>
           <p className="text-gray-500 text-sm mt-1">
             Gérez vos informations de compte et votre mot de passe.
           </p>
@@ -135,7 +135,7 @@ const Profile = () => {
 
         {error && (
           <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
-            <AlertCircle className="w-4 h-4" />
+            <AlertCircle className="w-4 h-4 shrink-0" />
             {error}
           </div>
         )}
@@ -145,28 +145,30 @@ const Profile = () => {
             <div className="w-8 h-8 border-3 border-primary/20 border-t-primary rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="grid lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Carte profil */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="w-14 h-14 rounded-xl bg-primary-light flex items-center justify-center mb-4">
                 <User className="w-7 h-7 text-primary" />
               </div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-gray-900 capitalize">
                 Dr. {profile?.prenom} {profile?.nom}
               </h2>
               <p className="text-sm text-gray-500 mt-1">{profile?.email}</p>
 
               <div className="mt-6 space-y-3">
                 <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <CalendarDays className="w-4 h-4 text-primary" />
+                  <CalendarDays className="w-4 h-4 text-primary shrink-0" />
                   Compte créé le {createdAt}
                 </div>
                 <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <ShieldCheck className="w-4 h-4 text-risk-low" />
+                  <ShieldCheck className="w-4 h-4 text-risk-low shrink-0" />
                   {profile?.is_active ? 'Compte actif' : 'Compte désactivé'}
                 </div>
               </div>
             </div>
 
+            {/* Formulaire informations */}
             <form onSubmit={handleProfileSubmit} className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
               <div className="flex items-center gap-2 mb-5">
                 <User className="w-5 h-5 text-primary" />
@@ -175,12 +177,12 @@ const Profile = () => {
 
               {profileMessage && (
                 <div className="mb-4 p-3 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4" />
+                  <CheckCircle className="w-4 h-4 shrink-0" />
                   {profileMessage}
                 </div>
               )}
 
-              <div className="grid md:grid-cols-2 gap-4 mb-4">
+              <div className="grid sm:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">Nom</label>
                   <input
@@ -205,7 +207,7 @@ const Profile = () => {
                 </div>
               </div>
 
-              <div className="mb-5">
+              <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -219,10 +221,11 @@ const Profile = () => {
                 </div>
               </div>
 
+              {/* Bouton Enregistrer — bleu #0C447C */}
               <button
                 type="submit"
                 disabled={savingProfile}
-                className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary-medium transition-colors disabled:opacity-60"
+                className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary-medium transition-colors disabled:opacity-60"
               >
                 {savingProfile ? (
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -233,6 +236,7 @@ const Profile = () => {
               </button>
             </form>
 
+            {/* Formulaire mot de passe */}
             <form onSubmit={handlePasswordSubmit} className="lg:col-span-3 bg-white rounded-xl shadow-sm p-6">
               <div className="flex items-center gap-2 mb-5">
                 <KeyRound className="w-5 h-5 text-primary" />
@@ -241,12 +245,12 @@ const Profile = () => {
 
               {passwordMessage && (
                 <div className="mb-4 p-3 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4" />
+                  <CheckCircle className="w-4 h-4 shrink-0" />
                   {passwordMessage}
                 </div>
               )}
 
-              <div className="grid md:grid-cols-3 gap-4 mb-5">
+              <div className="grid sm:grid-cols-3 gap-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">Mot de passe actuel</label>
                   <input
@@ -284,10 +288,10 @@ const Profile = () => {
               <button
                 type="submit"
                 disabled={savingPassword}
-                className="flex items-center gap-2 px-5 py-2.5 bg-white text-primary font-semibold rounded-xl border border-primary hover:bg-primary-light transition-colors disabled:opacity-60"
+                className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary-medium transition-colors disabled:opacity-60"
               >
                 {savingPassword ? (
-                  <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <KeyRound className="w-4 h-4" />
                 )}

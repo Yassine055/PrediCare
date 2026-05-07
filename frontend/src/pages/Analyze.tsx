@@ -47,11 +47,9 @@ const Analyze = () => {
   const [savedId, setSavedId] = useState<number | null>(null);
   const [error, setError] = useState('');
 
-  // Patient existant transmis depuis la page /patients via navigate state
   const [existingPatient, setExistingPatient] = useState<Patient | null>(null);
   const [existingPatientId, setExistingPatientId] = useState<number | null>(null);
 
-  // Pré-remplir le formulaire si un patient est passé en navigation state
   useEffect(() => {
     const p = location.state?.patient as Patient | undefined;
     if (!p) return;
@@ -73,7 +71,7 @@ const Analyze = () => {
     });
     setExistingPatient(p);
     setExistingPatientId(p.id);
-    setSavedId(p.id); // PDF disponible immédiatement pour ce patient
+    setSavedId(p.id);
   }, [location.state]);
 
   const update = (field: string, value: number | string) => {
@@ -85,7 +83,6 @@ const Analyze = () => {
     setError('');
     setLoading(true);
     setSaved(false);
-    // Ne pas effacer savedId pour un patient existant (PDF reste accessible)
     if (!existingPatientId) setSavedId(null);
 
     try {
@@ -104,7 +101,6 @@ const Analyze = () => {
     setSaving(true);
     try {
       if (existingPatientId) {
-        // Patient existant — sauvegarder uniquement le nouveau score
         await createScore({
           patient_id  : existingPatientId,
           score       : prediction.score,
@@ -113,7 +109,6 @@ const Analyze = () => {
           shap_values : prediction.shap_values,
         });
       } else {
-        // Nouveau patient — créer d'abord le dossier patient
         const patient = await createPatient(form);
         setSavedId(patient.id);
         await createScore({
@@ -168,9 +163,9 @@ const Analyze = () => {
   return (
     <div className="min-h-screen bg-bg">
       <Sidebar />
-      <main className="ml-[220px] p-8">
+      <main className="ml-0 lg:ml-[220px] p-4 sm:p-6 lg:p-8 pt-16 lg:pt-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
             {existingPatient
               ? `Analyser : ${existingPatient.prenom} ${existingPatient.nom}`
               : 'Analyse de risque'}
@@ -188,8 +183,9 @@ const Analyze = () => {
           </div>
         )}
 
-        <div className="grid lg:grid-cols-2 gap-6">
-          {/* ── LEFT: Form ── */}
+        {/* Mobile : formulaire en haut, résultats en bas — Desktop : 2 colonnes */}
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6">
+          {/* ── Formulaire ── */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* IDENTITÉ */}
             <div className="bg-white rounded-xl shadow-sm p-5">
@@ -232,9 +228,9 @@ const Analyze = () => {
 
               {/* Âge */}
               <div className="mb-5">
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-sm font-medium text-gray-600">Âge</label>
-                  <span className="text-sm font-semibold text-primary">{form.age} ans</span>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium text-gray-700">Âge</label>
+                  <span className="text-sm font-bold text-primary">{form.age} ans</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <input
@@ -244,7 +240,7 @@ const Analyze = () => {
                     max={120}
                     value={form.age}
                     onChange={(e) => update('age', Number(e.target.value))}
-                    className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                    className="flex-1 h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
                   />
                   <input
                     id="analyze-age"
@@ -260,10 +256,10 @@ const Analyze = () => {
 
               {/* IMC */}
               <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-sm font-medium text-gray-600">IMC</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium text-gray-700">IMC</label>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-primary">{form.imc}</span>
+                    <span className="text-sm font-bold text-primary">{form.imc}</span>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${imcBadge.cls}`}>
                       {imcBadge.label}
                     </span>
@@ -278,7 +274,7 @@ const Analyze = () => {
                     step={0.1}
                     value={form.imc}
                     onChange={(e) => update('imc', Number(e.target.value))}
-                    className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                    className="flex-1 h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
                   />
                   <input
                     id="analyze-imc"
@@ -372,7 +368,7 @@ const Analyze = () => {
                 <FlaskConical className="w-5 h-5 text-primary" />
                 <h2 className="font-semibold text-gray-900">Bilan lipidique</h2>
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">HDL (g/L)</label>
                   <input
@@ -381,7 +377,7 @@ const Analyze = () => {
                     step={0.01}
                     value={form.hdl}
                     onChange={(e) => update('hdl', Number(e.target.value))}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   />
                 </div>
                 <div>
@@ -392,7 +388,7 @@ const Analyze = () => {
                     step={0.01}
                     value={form.ldl}
                     onChange={(e) => update('ldl', Number(e.target.value))}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   />
                 </div>
                 <div>
@@ -403,7 +399,7 @@ const Analyze = () => {
                     step={1}
                     value={form.creatinine}
                     onChange={(e) => update('creatinine', Number(e.target.value))}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   />
                 </div>
               </div>
@@ -417,10 +413,13 @@ const Analyze = () => {
               </div>
               <div className="space-y-4">
                 {/* Tabac toggle */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Cigarette className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm font-medium text-gray-700">Tabagisme</span>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                  <div className="flex items-center gap-3">
+                    <Cigarette className="w-5 h-5 text-gray-500" />
+                    <div>
+                      <p className="text-sm font-semibold text-gray-800">Tabagisme</p>
+                      <p className="text-xs text-gray-500">Patient fumeur actuel ou ancien</p>
+                    </div>
                   </div>
                   <button
                     id="analyze-tabac"
@@ -433,10 +432,13 @@ const Analyze = () => {
                 </div>
 
                 {/* Antécédents toggle */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm font-medium text-gray-700">Antécédents familiaux</span>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                  <div className="flex items-center gap-3">
+                    <Users className="w-5 h-5 text-gray-500" />
+                    <div>
+                      <p className="text-sm font-semibold text-gray-800">Antécédents familiaux</p>
+                      <p className="text-xs text-gray-500">Diabète chez un parent proche</p>
+                    </div>
                   </div>
                   <button
                     id="analyze-antecedents"
@@ -450,29 +452,28 @@ const Analyze = () => {
               </div>
             </div>
 
-            {/* Submit */}
+            {/* Bouton analyser — grand et bien visible */}
             <button
               id="analyze-submit"
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary-medium transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-60 shadow-lg shadow-primary/20"
+              className="w-full py-4 bg-primary text-white text-lg font-bold rounded-xl hover:bg-primary-medium transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-60 shadow-lg shadow-primary/20"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  <Microscope className="w-5 h-5" />
+                  <Microscope className="w-6 h-6" />
                   Analyser le risque
                 </>
               )}
             </button>
           </form>
 
-          {/* ── RIGHT: Results ── */}
+          {/* ── Résultats ── */}
           <div className="space-y-5">
             {!prediction ? (
               existingPatient?.last_score != null ? (
-                /* Dernier score connu du patient — avant nouvelle analyse */
                 <div className="bg-white rounded-xl shadow-sm p-6">
                   <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-2">
@@ -488,7 +489,6 @@ const Analyze = () => {
                     )}
                   </div>
 
-                  {/* Score + Niveau */}
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-20 h-20 rounded-full border-4 border-primary flex items-center justify-center shrink-0">
                       <span className="text-2xl font-bold text-primary">
@@ -517,7 +517,6 @@ const Analyze = () => {
                     Cliquez sur "Analyser le risque" pour recalculer avec les données actuelles
                   </p>
 
-                  {/* Bouton PDF disponible dès l'ouverture */}
                   <button
                     onClick={handlePDF}
                     className="mt-4 w-full py-2.5 bg-white text-primary font-semibold rounded-xl border border-primary hover:bg-primary-light flex items-center justify-center gap-2 transition-all duration-200"
@@ -527,7 +526,6 @@ const Analyze = () => {
                   </button>
                 </div>
               ) : (
-                /* Aucune analyse précédente — état vide par défaut */
                 <div className="bg-white rounded-xl shadow-sm p-12 flex flex-col items-center justify-center text-center min-h-[400px]">
                   <div className="w-20 h-20 rounded-2xl bg-primary-light flex items-center justify-center mb-4 opacity-50">
                     <Activity className="w-10 h-10 text-primary" />
@@ -555,7 +553,6 @@ const Analyze = () => {
                   shap_values={prediction.shap_values}
                 />
 
-                {/* Action buttons */}
                 <div className="flex gap-3">
                   <button
                     id="analyze-save"

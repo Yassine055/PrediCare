@@ -30,6 +30,7 @@ const ScoreCard = ({ score, niveau, probabilite, message }: ScoreCardProps) => {
   useEffect(() => {
     let start = 0;
     const end = Math.round(score);
+    if (end === 0) return;
     const duration = 1500;
     const stepTime = duration / end;
 
@@ -50,7 +51,7 @@ const ScoreCard = ({ score, niveau, probabilite, message }: ScoreCardProps) => {
     <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col items-center">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">Score de Risque</h3>
 
-      {/* SVG Circle */}
+      {/* Cercle SVG — bien centré */}
       <div className="relative w-48 h-48 mb-4">
         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
           <circle
@@ -75,14 +76,15 @@ const ScoreCard = ({ score, niveau, probabilite, message }: ScoreCardProps) => {
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-4xl font-bold" style={{ color: color.main }}>
+          {/* Score grand et lisible */}
+          <span className="text-5xl font-bold leading-none" style={{ color: color.main }}>
             {animatedScore}
           </span>
-          <span className="text-sm text-gray-500">/100</span>
+          <span className="text-sm text-gray-400 mt-1">/100</span>
         </div>
       </div>
 
-      {/* Badge */}
+      {/* Badge niveau avec couleurs correspondantes */}
       <span
         className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold mb-3"
         style={{ backgroundColor: color.bg, color: color.main }}
@@ -95,7 +97,7 @@ const ScoreCard = ({ score, niveau, probabilite, message }: ScoreCardProps) => {
         Probabilité : <span className="font-semibold">{(probabilite * 100).toFixed(1)}%</span>
       </p>
 
-      {/* Message */}
+      {/* Message clinique */}
       <p className="text-gray-500 text-sm text-center leading-relaxed max-w-xs">{message}</p>
     </div>
   );
