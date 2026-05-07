@@ -69,10 +69,16 @@ app = FastAPI(
 # ── Middleware CORS — autoriser le frontend ───────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex = r"http://(localhost|127\.0\.0\.1)(:\d+)?",
-    allow_credentials  = True,
-    allow_methods      = ["*"],
-    allow_headers      = ["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:8080",
+        "https://predicare-three.vercel.app",
+        "https://*.vercel.app",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

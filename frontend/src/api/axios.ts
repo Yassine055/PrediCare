@@ -1,10 +1,12 @@
 import axios from 'axios';
 
+// En production, VITE_API_URL pointe vers Railway ; en dev, fallback sur localhost
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: false, // JWT envoyé dans Authorization header, pas dans les cookies
 });
 
 // Request interceptor — attach Bearer token
