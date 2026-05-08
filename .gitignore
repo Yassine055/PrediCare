@@ -1,0 +1,34 @@
+# Variables d'environnement
+.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Base de données locale
+*.db
+*.sqlite
+test_predicare.db
+
+# Modèles ML
+*.pkl
+*.joblib
+
+# Node.js
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Logs
+*.log
+.coverage
+.pytest_cache/
+
+# OS
+.DS_Store
+Thumbs.db
