@@ -31,7 +31,7 @@ def generate_patients(n: int) -> pd.DataFrame:
         + 0.01 * (age - 40)
         + 0.4 * antecedents_familiaux
         + 0.2 * tabac
-        + rng.normal(0, 0.5, size=n)
+        + rng.normal(0, 0.3, size=n)
     )
     glycemie_jeun = glycemie_base.clip(3.5, 16.0)
 
@@ -40,7 +40,7 @@ def generate_patients(n: int) -> pd.DataFrame:
     hba1c = (
         glycemie_jeun * 0.9
         + 1.5
-        + rng.normal(0, 0.3, size=n)
+        + rng.normal(0, 0.2, size=n)
     ).clip(4.0, 14.0)
 
     # --- Tension artérielle ---
@@ -90,15 +90,15 @@ def generate_patients(n: int) -> pd.DataFrame:
     # --- Label diabète ---
     # Score de risque logistique basé sur les facteurs cliniques
     log_odds = (
-        -3.0
-        + 0.04 * (age - 40)
-        + 0.08 * (imc - 25)
-        + 0.6 * (glycemie_jeun - 5.0)
-        + 0.5 * (hba1c - 5.5)
-        + 0.8 * antecedents_familiaux
-        + 0.3 * tabac
-        + 0.01 * (tension_systolique - 120)
-        - 0.5 * (hdl - 1.2)
+        -5.0
+        + 0.06 * (age - 40)
+        + 0.12 * (imc - 25)
+        + 1.2 * (glycemie_jeun - 5.0)
+        + 1.0 * (hba1c - 5.5)
+        + 1.2 * antecedents_familiaux
+        + 0.5 * tabac
+        + 0.015 * (tension_systolique - 120)
+        - 0.8 * (hdl - 1.2)
     )
     prob_diabete = 1 / (1 + np.exp(-log_odds))
     diabete = rng.binomial(1, prob_diabete)

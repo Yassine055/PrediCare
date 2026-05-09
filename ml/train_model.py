@@ -40,13 +40,19 @@ X_train, X_test, y_train, y_test = train_test_split(
 print(f"\nTrain : {len(X_train)} | Test : {len(X_test)}")
 
 # ── 5. Entraîner XGBoost ──────────────────────────────────────────────────────
+neg, pos = (y_train == 0).sum(), (y_train == 1).sum()
+scale_pos = neg / pos
+
 print("\nEntrainement XGBoost...")
 model = XGBClassifier(
-    n_estimators=300,
-    learning_rate=0.05,
-    max_depth=6,
+    n_estimators=500,
+    learning_rate=0.03,
+    max_depth=5,
     subsample=0.8,
     colsample_bytree=0.8,
+    min_child_weight=3,
+    gamma=0.1,
+    scale_pos_weight=scale_pos,
     eval_metric="auc",
     random_state=42,
     verbosity=0
@@ -100,7 +106,7 @@ print("="*40)
 print(f"AUC-ROC test     : {auc:.4f}")
 print(f"AUC-ROC CV moyen : {cv_scores.mean():.4f}")
 if auc >= 0.85:
-    print("OBJECTIF ATTEINT : AUC > 0.85 ✓")
+    print("OBJECTIF ATTEINT : AUC > 0.85 [OK]")
 else:
     print(f"Objectif non atteint — AUC actuel : {auc:.4f}")
 print("="*40)
